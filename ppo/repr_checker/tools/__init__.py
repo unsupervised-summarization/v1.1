@@ -11,7 +11,10 @@ def extract_sent(sents: List[str], ignore_short: bool = False) -> (str, str):
     if len(sents) <= 2 and not ignore_short:
         return None, None
 
-    n = np.random.randint(1, min(len(sents) // 2 + 1 + int(ignore_short), 3))  # how many sentences to extract
+    if np.random.random() >= 0.5:
+        n = np.random.randint(1, min(len(sents) // 2 + 1 + int(ignore_short), 3))  # how many sentences to extract
+    else:
+        n = 1  # how many sentences to extract
 
     a = np.random.randint(0, len(sents)-n+1)
     b = a + n

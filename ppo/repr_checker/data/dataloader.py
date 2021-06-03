@@ -21,7 +21,7 @@ def get_web_text(url) -> str:
             if first:
                 time.sleep(1)
             else:
-                time.sleep(1)
+                time.sleep(60)
                 first = False
     return r.content.decode('utf8')
 
