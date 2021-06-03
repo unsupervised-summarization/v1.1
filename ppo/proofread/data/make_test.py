@@ -1,17 +1,15 @@
 # Making test dataset
 import joblib
 
-from .dataloader import DataLoader
+from .dataloader import DataLoader, get_web_text
 from ..model import tokenizer
 
 data_loader = DataLoader(tokenizer)
 
-with open('proofread/assets/dataset/wikicorpus/306.txt.test', 'r', encoding='utf8') as f:
-    data = f.read()
-
-data = data.split('\n')[:1000]
-data_loader.data = data
+data_loader.n_range = (3072, 3074)
 test = data_loader.get_batch(1000)
+
+print(test[0].shape)
 
 print('saving')
 joblib.dump(test, 'proofread/assets/dataset/test.joblib')

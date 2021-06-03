@@ -16,7 +16,7 @@ def make_noisy(words: List[str], again: bool = False) -> List[str]:
     # Apply methods randomly
     before = words.copy()
 
-    n = np.random.randint(1, 2)  # how many times to apply methods
+    n = np.random.randint(1, 3)  # how many times to apply methods
     for _ in range(n):
         if len(words) < 3:
             return None
@@ -32,7 +32,6 @@ def make_noisy(words: List[str], again: bool = False) -> List[str]:
 
         if words is None:
             words = before.copy()
-
 
     if words == before:
         # if there is no change,

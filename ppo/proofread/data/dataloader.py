@@ -11,13 +11,19 @@ from ..utils import shuffle
 
 
 def get_web_text(url) -> str:
+    first = True
     while True:
         try:
             r = requests.get(url)
+            break
         except requests.exceptions.ConnectionError as e:
             # if server is dead
             print(url, '\t', e)
-            time.sleep(600)
+            if first:
+                time.sleep(1)
+            else:
+                time.sleep(60)
+                first = False
     return r.content.decode('utf8')
 
 
@@ -26,6 +32,7 @@ class DataLoader:
         self.base_url = base_url
         self.n_range = list(map(int, get_web_text(self.base_url+'status.txt').split('-')))
         self.n_range[1] += 1
+        self.n_range[1] -= 2  # the last two files are used for test.
 
         self.data: List[str] = []
 
@@ -36,6 +43,7 @@ class DataLoader:
         del self.data
 
         # load two files
+        n = np.random.randint(*self.n_range)
         url = self.base_url + f'{n}.txt'
         data: str = get_web_text(url)
         self.data = shuffle(data.split('\n'))
@@ -78,7 +86,7 @@ class DataLoader:
         x1 = [self.preprocessing(sent) for sent in x1]
         x0: List[List[str]] = [make_noisy(self.split_sentence(sent)) for sent in x1]  # tools
         x0 = [i for i in x0 if i is not None]
-        x0: List[str] = [' '.join(words) for words in x0]
+        x0: List[str] = [' '.join([word for word in words if word is not None]) for words in x0]
         # x0 : label 0, x1 : label 1
 
         labels: np.ndarray = np.concatenate([np.zeros((len(x0), 1)), np.ones((len(x1), 1))])
