@@ -3,7 +3,7 @@ from transformers import GPT2Tokenizer, GPT2LMHeadModel, GPT2ForSequenceClassifi
 
 
 actor_model_name: str = "gpt2"
-critic_model_name: str = "distilgpt2"
+critic_model_name: str = "gpt2"
 
 
 def load_actor_model():

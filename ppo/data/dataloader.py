@@ -11,13 +11,19 @@ def shuffle(x: list) -> list:
 
 
 def get_web_text(url) -> str:
+    first = True
     while True:
         try:
             r = requests.get(url)
+            break
         except requests.exceptions.ConnectionError as e:
             # if server is dead
             print(url, '\t', e)
-            time.sleep(600)
+            if first:
+                time.sleep(1)
+            else:
+                time.sleep(60)
+                first = False
     return r.content.decode('utf8')
 
 

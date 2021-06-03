@@ -5,6 +5,7 @@ import numpy as np
 
 from repr_checker.model import tokenizer, model, optimizer
 from repr_checker.data import DataLoader
+from repr_checker.utils import Logger
 
 device = torch.device('cuda')
 model = model.to(device)
@@ -14,12 +15,15 @@ test_input_ids, test_attention_mask, test_labels = joblib.load('repr_checker/tes
 
 
 EPOCH = 100
-BATCHSIZE = 1
+BATCHSIZE = 2
 
 data_loader = DataLoader(tokenizer)
 model.resize_token_embeddings(len(data_loader.tokenizer))
 
+logger = Logger('train-loss', 'train-acc', 'test-loss', 'test-acc')
+
 try:
+    logger.load('repr_checker/train_logger.pkl')
     model.load_state_dict(torch.load('repr_checker/checkpoint.ckpt'))
     print('recover checkpoint')
     model.train()
@@ -47,10 +51,15 @@ for epoch in range(EPOCH):
 
         acc = (labels.cpu().detach().numpy().astype(int) == (out.cpu().detach().numpy() >= 0.5).astype(int)).sum() / len(labels)
         loss = loss.cpu().detach().numpy()
+        logger['train-loss'](loss)
+        logger['train-acc'](acc)
+        logger['test-loss'](None)
+        logger['test-acc'](None)
         print('batch:', iteration, 'ㅤㅤ acc:', round(float(acc), 4), 'ㅤㅤ loss:', round(float(loss), 4), 'ㅤㅤ', end='\r')
 
         if iteration % 200 == 0:
             torch.save(model.state_dict(), 'repr_checker/checkpoint.ckpt')
+            logger.save('repr_checker/train_logger.pkl')
             print('\n\nsaving model..\n')
 
         if iteration % 100 == 0:
@@ -75,6 +84,8 @@ for epoch in range(EPOCH):
                     print(i, end='\r')
                 print('test acc', np.mean(test_acc))
                 print('test loss', np.mean(test_loss))
+                logger['test-loss'](test_loss)
+                logger['test-acc'](test_acc)
                 print()
 
         del input_ids, attention_mask, labels

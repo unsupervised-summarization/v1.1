@@ -60,3 +60,13 @@ def fancy(lst: List, indexes: List[int], fn=None) -> List:
 
 def tensor_to_list(tensor: torch.Tensor) -> np.ndarray:
     return tensor.cpu().detach().numpy().tolist()
+
+
+def to_numpy(tensor: torch.tensor) -> np.ndarray:
+    # tensor to numpy
+    return tensor.cpu().detach().numpy()
+
+
+def shuffle(x: list) -> list:
+    np.random.shuffle(x)
+    return x
